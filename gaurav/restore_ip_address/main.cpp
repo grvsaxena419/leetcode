@@ -5,10 +5,13 @@
  * Created on 23 May, 2013, 7:02 PM
  */
 
-#include <cstdlib>
-#include <vector>
-#include <string>
+# include <cstdlib>
+# include <vector>
+# include <string>
 # include <iostream>
+# include <set>
+# include <sstream>
+# include <stdio.h>
 
 using namespace std;
 
@@ -17,22 +20,27 @@ using namespace std;
  */
 
 class Solution {
-    vector<string> ips;
+    set<string> ips;
     char *str; 
     int len;
-    void find_address(int index, vector<string> &ip)
+    void find_address(int index, vector<int> &ip)
     {
         int val,i;
-        if(index == len)
+        if(index == len && ip.size() == 4)
         {
-            vector<string>::iterator itr = ip.begin();
-            string ip_add = "" + *itr;
+            vector<int>::iterator itr = ip.begin();
+            std::stringstream sstream;
+            sstream << *itr;
             itr ++;
             for(;itr != ip.end(); itr++)
             {
-                ip_add = "." + ip_add + *itr;
+                sstream << "." << *itr;
             }
-            ips.push_back(ip_add);
+            ips.insert(sstream.str());
+        }
+        else if(ip.size() >=4)
+        {
+            return;
         }
         else
         {
@@ -40,11 +48,16 @@ class Solution {
             {
                 val = val * 10;
                 val = val + str[i] - '0';
-                if(val < 256)
+                if(val < 256 && ip.size() < 4)
                 {
-                    ip.push_back(string(str[index], str[i]));
+                    string stemp = string(str + index , i-index + 1);
+                    ip.push_back(val);
                     find_address(i+1, ip);
                     ip.pop_back();
+                }
+                else
+                {
+                    break;
                 }
             }
         }
@@ -54,12 +67,16 @@ public:
     vector<string> restoreIpAddresses(string s) {
         // Start typing your C/C++ solution below
         // DO NOT write int main() function
-        vector<string> vv;
+        vector<int> vv;
         ips.clear();
         str = (char*) s.c_str();
         len = s.length();
         find_address(0, vv);
-        return ips;
+        //cout<< "size->" <<ips.size();
+        fflush(stdout);
+        vector<string> output(ips.begin(), ips.end());
+        //std::copy(ips.begin(), ips.end(), output.begin());
+        return output;
     }
 };
 
@@ -67,7 +84,7 @@ public:
 int main(int argc, char** argv) {
     Solution s;
     vector<string> vv;
-    vv = s.restoreIpAddresses("25525511135");
+    vv = s.restoreIpAddresses("00000100");
     
     cout<<"{";
     for(vector<string>::iterator itr = vv.begin(); itr!= vv.end();
