@@ -25,7 +25,7 @@ class Solution {
     int len;
     void find_address(int index, vector<int> &ip)
     {
-        int val,i;
+        int val,i, old;
         if(index == len && ip.size() == 4)
         {
             vector<int>::iterator itr = ip.begin();
@@ -44,13 +44,18 @@ class Solution {
         }
         else
         {
+            old = -1;
             for(i=index, val=0; i<len; i++)
-            {
+            {                
                 val = val * 10;
                 val = val + str[i] - '0';
-                if(val < 256 && ip.size() < 4)
+                if(old == val || val - old == str[i] - '0')
                 {
-                    string stemp = string(str + index , i-index + 1);
+                    break;
+                }
+                old = val;
+                if(val < 256 && ip.size() < 4)
+                {                    
                     ip.push_back(val);
                     find_address(i+1, ip);
                     ip.pop_back();
@@ -84,7 +89,7 @@ public:
 int main(int argc, char** argv) {
     Solution s;
     vector<string> vv;
-    vv = s.restoreIpAddresses("00000100");
+    vv = s.restoreIpAddresses("00000");
     
     cout<<"{";
     for(vector<string>::iterator itr = vv.begin(); itr!= vv.end();
